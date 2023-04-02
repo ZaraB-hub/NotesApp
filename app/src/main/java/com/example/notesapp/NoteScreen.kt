@@ -1,18 +1,19 @@
 package com.example.notesapp
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
@@ -23,11 +24,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun NoteScreen(
-    navController: NavController
-){
+fun NoteScreen(navController: NavController){
     NotePage(navController=navController)
 }
 
@@ -64,19 +64,59 @@ fun TopAppBar(navController: NavController){
     Row(modifier =Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween) {
         IconButton(onClick = { navController.popBackStack() }, modifier = Modifier
             .width(25.dp)
-            .height(25.dp)) {
+            .height(25.dp)
+            .offset(y=8.dp)
+            ) {
             Icon(
                 Icons.Filled.ArrowBack, contentDescription = "Localized description",
-                modifier = Modifier.fillMaxSize())
+               )
         }
-        IconButton(onClick = { /* doSomething() */ }, modifier = Modifier
-            .width(25.dp)
-            .height(25.dp)) {
-            Icon(
-                Icons.Filled.Menu, contentDescription = "Localized description",
-                modifier = Modifier.fillMaxSize())
-        }
+        OptionMenu(modifier = Modifier.fillMaxSize())
     }
 }
 
+@Composable
+fun OptionMenu(modifier: Modifier=Modifier) {
+    var expanded by remember { mutableStateOf(false) }
+    Box(modifier = Modifier
+        .wrapContentSize()) {
+        IconButton(onClick = { expanded = true }) {
+            Icon(Icons.Default.MoreVert,contentDescription = "Localized description")
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text("Delete") },
+                onClick = { /* Handle edit! */ },
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.Delete,
+                        contentDescription = null
+                    )
+                })
+            DropdownMenuItem(
+                text = { Text("Share") },
+                onClick = { /* Handle settings! */ },
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.Share,
+                        contentDescription = null
+                    )
+                })
 
+        }
+    }
+}
+@Preview(showSystemUi = true)
+@Composable
+fun prevNotes(){
+    NotePage(navController = rememberNavController())
+}
+
+@Preview (showBackground =true )
+@Composable
+fun prevTop(){
+    TopAppBar(navController = rememberNavController())
+}

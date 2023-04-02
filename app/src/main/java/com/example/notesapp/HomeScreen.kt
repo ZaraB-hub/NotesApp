@@ -9,10 +9,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,12 +59,7 @@ fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
     Surface(color = Color.Blue.copy(alpha = .1f)) {
         Box(modifier.fillMaxSize()) {
             Column(Modifier.fillMaxSize()) {
-                Text(
-                    text = "Folder Name",
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 9.dp)
-                )
+                MainTopBar()
                 NotesList(notes = items,navController=navController)
             }
             Row(
@@ -89,8 +85,9 @@ fun noteCustom(note: Notes,modifier: Modifier=Modifier,navController: NavControl
     Surface(
         color = Color.White,
         shape = RoundedCornerShape(15),
-        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp).
-                clickable { navController.navigate(route=Screen.Note.route) }
+        modifier = Modifier
+            .padding(vertical = 4.dp, horizontal = 8.dp)
+            .clickable { navController.navigate(route = Screen.Note.route) }
 
     ) {
         Column(
@@ -130,7 +127,37 @@ fun NotesList(notes:List<Notes>,modifier: Modifier=Modifier,navController: NavCo
         }
     }
 }
-
+@Composable
+fun MainTopBar(){
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                "Notes",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontSize =25.sp
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { /* doSomething() */ }) {
+                Icon(
+                    imageVector = Icons.Filled.Menu,
+                    contentDescription = "Localized description",
+                    Modifier.fillMaxSize().size(5.dp)
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { /* doSomething() */ }) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = "Localized description",
+                    Modifier.fillMaxSize().size(5.dp)
+                )
+            }
+        }
+    )
+}
 
 @Preview(showBackground = true)
 @Composable
