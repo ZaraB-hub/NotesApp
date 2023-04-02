@@ -26,18 +26,19 @@ import androidx.navigation.NavController
 
 @Composable
 fun NoteScreen(
+    navController: NavController
 ){
-    NotePage()
+    NotePage(navController=navController)
 }
 
 @Composable
-fun NotePage(modifier: Modifier=Modifier){
+fun NotePage(navController:NavController,modifier: Modifier=Modifier){
     var title by remember { mutableStateOf("Title") }
     var body by remember { mutableStateOf("A paragraph is a self-contained unit of discourse in writing dealing with a particular point or idea. Though not required by the orthographic conventions of any language with a writing system, paragraphs are a conventional means of organizing extended segments") }
     Column(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
-        TopAppBar()
+        TopAppBar(navController=navController)
         Text("1/4/2023, 16:43",modifier=Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,color= Color.DarkGray)
         BasicTextField(
@@ -59,9 +60,9 @@ fun NotePage(modifier: Modifier=Modifier){
     }
 }
 @Composable
-fun TopAppBar(){
+fun TopAppBar(navController: NavController){
     Row(modifier =Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween) {
-        IconButton(onClick = { /* doSomething() */ }, modifier = Modifier
+        IconButton(onClick = { navController.popBackStack() }, modifier = Modifier
             .width(25.dp)
             .height(25.dp)) {
             Icon(
@@ -79,8 +80,3 @@ fun TopAppBar(){
 }
 
 
-@Preview(showSystemUi = true)
-@Composable
-fun preview() {
-    NotePage()
-}
