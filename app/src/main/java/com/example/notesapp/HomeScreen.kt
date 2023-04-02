@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.notesapp.ui.theme.NotesAppTheme
-
+import com.example.notesapp.OptionMenu
 
 @Composable
 fun HomeScreen(
@@ -143,7 +143,9 @@ fun MainTopBar(){
                 Icon(
                     imageVector = Icons.Filled.Menu,
                     contentDescription = "Localized description",
-                    Modifier.fillMaxSize().size(5.dp)
+                    Modifier
+                        .fillMaxSize()
+
                 )
             }
         },
@@ -152,9 +154,12 @@ fun MainTopBar(){
                 Icon(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "Localized description",
-                    Modifier.fillMaxSize().size(5.dp)
+                    Modifier
+                        .fillMaxSize()
+
                 )
             }
+            OptionMenu()
         }
     )
 }
@@ -169,8 +174,6 @@ fun DefaultPreview() {
         navController = rememberNavController())
     }
 }
-
-
 
 @Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
