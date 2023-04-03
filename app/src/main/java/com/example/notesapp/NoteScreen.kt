@@ -34,7 +34,7 @@ fun NoteScreen(navController: NavController){
 @Composable
 fun NotePage(navController:NavController,modifier: Modifier=Modifier){
     var title by remember { mutableStateOf("Title") }
-    var body by remember { mutableStateOf("A paragraph is a self-contained unit of discourse in writing dealing with a particular point or idea. Though not required by the orthographic conventions of any language with a writing system, paragraphs are a conventional means of organizing extended segments") }
+    var body by remember { mutableStateOf("...") }
     Column(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
     ) {

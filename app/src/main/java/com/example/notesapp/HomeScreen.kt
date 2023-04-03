@@ -26,6 +26,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.notesapp.ui.theme.NotesAppTheme
 import com.example.notesapp.OptionMenu
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun HomeScreen(
@@ -34,23 +36,17 @@ fun HomeScreen(
     MyApp(navController=navController)
 }
 
-data class Notes(val id:Int,val title:String,val body:String)
+data class Notes(val id:Int,val title:String,val body:String,val timestamp:Date){
+    val formattedTimestamp: String
+        get() = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(timestamp)
+}
+
 val items = listOf(
     Notes(id = 1,
-        title = "Things to bye",
-        body = "djfjsdjdkjfkdjgkdjfgjdkfjgfdkgj"),
-    Notes(id = 1,
-        title = "Things to bye",
-        body = "djfjsdjdkjfkdjgkdjfgjdkfjgfdkgj"),
-    Notes(id = 1,
-        title = "Things to bye",
-        body = "djfjsdjdkjfkdjgkdjfgjdkfjgfdkgj"),
-    Notes(id = 1,
-        title = "Things to bye",
-        body = "djfjsdjdkjfkdjgkdjfgjdkfjgfdkgj"),
-    Notes(id = 1,
-        title = "Things to bye",
-        body = "djfjsdjdkjfkdjgkdjfgjdkfjgfdkgj"),
+        title = "Things to buy",
+        body = "djfjsdjdkjfkdjgkdjfgjdkfjgfdkgj",
+        timestamp = Date()),
+
 )
 
 
@@ -103,7 +99,7 @@ fun noteCustom(note: Notes,modifier: Modifier=Modifier,navController: NavControl
                 fontWeight = FontWeight.Bold
             )
             Row(modifier = Modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(text = "02/20/2000", fontSize = 20.sp, color = Color.Black.copy(alpha = 0.5f))
+                Text(text = "${note.formattedTimestamp}", fontSize = 20.sp, color = Color.Black.copy(alpha = 0.5f))
                 Text(
                     text = "${note.body}",
                     maxLines = 1,
@@ -170,7 +166,8 @@ fun DefaultPreview() {
     NotesAppTheme {
         noteCustom(note =Notes(id = 1,
             title = "Things to bye",
-            body = "bye djfjsdjdkjfkdjgkdjfgjdkfjgfdkgj"),
+            body = "bye djfjsdjdkjfkdjgkdjfgjdkfjgfdkgj",
+            timestamp = Date()),
         navController = rememberNavController())
     }
 }
