@@ -40,14 +40,15 @@ fun NotePage(note:Note?,navController:NavController,modifier: Modifier=Modifier)
     var body by remember { mutableStateOf(note?.body ?: "...") }
     var timestamp= note?.timestamp ?: Date()
 
-    
+
 
     Column(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
     ) {
         TopAppBar(navController=navController)
         Text("${timestamp}",modifier=Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,color= Color.DarkGray)
+        Spacer(modifier = Modifier.padding(vertical = 4.dp))
         BasicTextField(
             value = title,
             onValueChange = {title=it},
@@ -64,6 +65,11 @@ fun NotePage(note:Note?,navController:NavController,modifier: Modifier=Modifier)
 
         Button(
             onClick = {
+                if (note != null) {
+                    note.title = title
+                    note.body = body
+                    note.timestamp = timestamp
+                }
 
             },
             modifier = Modifier.align(Alignment.End)
@@ -79,7 +85,7 @@ fun TopAppBar(navController: NavController){
         IconButton(onClick = { navController.popBackStack() }, modifier = Modifier
             .width(25.dp)
             .height(25.dp)
-            .offset(y=8.dp)
+            .offset(y = 8.dp)
             ) {
             Icon(
                 Icons.Filled.ArrowBack, contentDescription = "Localized description",
