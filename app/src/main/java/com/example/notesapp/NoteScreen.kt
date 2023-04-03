@@ -30,24 +30,17 @@ import java.util.*
 
 @Composable
 fun NoteScreen(navController: NavController){
-    NotePage(navController=navController)
-}
+    val sentNote = navController.previousBackStackEntry?.savedStateHandle?.get<Note>("note")
+    NotePage(sentNote,navController=navController)
+    }
 
 @Composable
-fun NotePage(navController:NavController,modifier: Modifier=Modifier){
-    var title by remember { mutableStateOf("Title") }
-    var body by remember { mutableStateOf("...") }
-    var timestamp= Date()
+fun NotePage(note:Note?,navController:NavController,modifier: Modifier=Modifier){
+    var title by remember { mutableStateOf(note?.title ?: "Title") }
+    var body by remember { mutableStateOf(note?.body ?: "...") }
+    var timestamp= note?.timestamp ?: Date()
 
-//    // Create a new Notes object every time the text fields change
-//    val note = Notes(
-//        id = 3,
-//        title = title,
-//        body = body,
-//        timestamp = timestamp
-//    )
-//    Log.d("NotePage", note.toString())
-
+    
 
     Column(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
@@ -71,12 +64,6 @@ fun NotePage(navController:NavController,modifier: Modifier=Modifier){
 
         Button(
             onClick = {
-                val newNote = Note(
-                    id =3,
-                    title = title,
-                    body = body,
-                    timestamp = timestamp)
-
 
             },
             modifier = Modifier.align(Alignment.End)
@@ -139,7 +126,7 @@ fun OptionMenu(modifier: Modifier=Modifier) {
 @Preview(showSystemUi = true)
 @Composable
 fun prevNotes(){
-    NotePage(navController = rememberNavController())
+    NotePage(null,navController = rememberNavController())
 }
 
 @Preview (showBackground =true )

@@ -10,8 +10,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,8 +23,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.notesapp.ui.theme.NotesAppTheme
-import com.example.notesapp.OptionMenu
-import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
@@ -38,8 +34,6 @@ fun HomeScreen(
 
 @Composable
 fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
-//    val notesList = remember { mutableStateListOf<Note>() }
-//    notesList.add(Note(1,"New Note","My Text",Date()))
 
     Surface(color = Color.Blue.copy(alpha = .1f)) {
         Box(modifier.fillMaxSize()) {
@@ -55,7 +49,8 @@ fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.End
             ) {
-                FloatingActionButton(onClick = { navController.navigate(route=Screen.Note.route) }, shape = CircleShape, modifier = Modifier
+                FloatingActionButton(onClick = { navController.currentBackStackEntry?.savedStateHandle?.remove<Note>("note")
+                    navController.navigate(route=Screen.Note.route) }, shape = CircleShape, modifier = Modifier
                     .width(60.dp)
                     .height(60.dp), containerColor = Color.hsl(270f,0.5f,0.75f), contentColor = Color.White) {
                     Icon(Icons.Filled.Add, "Create Note",modifier=Modifier.size(55.dp))
@@ -65,14 +60,17 @@ fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
     }
 }
 
+
 @Composable
-fun noteCustom(note: Note,modifier: Modifier=Modifier,navController: NavController) {
+fun NoteCustom(note: Note,navController: NavController) {
     Surface(
         color = Color.White,
         shape = RoundedCornerShape(15),
         modifier = Modifier
             .padding(vertical = 4.dp, horizontal = 8.dp)
-            .clickable { navController.navigate(route = Screen.Note.route) }
+            .clickable {
+                navController.currentBackStackEntry?.savedStateHandle?.set("note",note)
+                navController.navigate(route = Screen.Note.route) }
 
     ) {
         Column(
@@ -88,7 +86,7 @@ fun noteCustom(note: Note,modifier: Modifier=Modifier,navController: NavControll
                 fontWeight = FontWeight.Bold
             )
             Row(modifier = Modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(text = "${note.formattedTimestamp}", fontSize = 20.sp, color = Color.Black.copy(alpha = 0.5f))
+                Text(text = note.formattedTimestamp, fontSize = 20.sp, color = Color.Black.copy(alpha = 0.5f))
                 Text(
                     text = "${note.body}",
                     maxLines = 1,
@@ -103,11 +101,11 @@ fun noteCustom(note: Note,modifier: Modifier=Modifier,navController: NavControll
 }
 
 @Composable
-fun NotesList(notesList:List<Note>,modifier: Modifier=Modifier,navController: NavController){
+fun NotesList(notesList:List<Note>,navController: NavController){
     LazyColumn(contentPadding = PaddingValues(12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)) {
         items(notesList){
-                note->noteCustom(note = note, navController = navController)
+                note->NoteCustom(note = note, navController = navController)
             // Divider(color=Color.LightGray.copy(alpha = 0.8f), thickness = 2.dp)
         }
     }
@@ -151,11 +149,11 @@ fun MainTopBar(){
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
+fun CustomNoteObjectPreview() {
     NotesAppTheme {
-        noteCustom(note =Note(id = 1,
+        NoteCustom(note =Note(id = 1,
             title = "Things to bye",
-            body = "bye djfjsdjdkjfkdjgkdjfgjdkfjgfdkgj",
+            body = "bye",
             timestamp = Date()),
         navController = rememberNavController())
     }
@@ -172,9 +170,7 @@ fun ColumnPreview() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun Bottom(){
-    Surface(color= Color.Yellow) {
-        Column(verticalArrangement = Arrangement.Bottom) {
-            Row(
+               Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = Color.White)
@@ -193,7 +189,5 @@ fun Bottom(){
             }
 
         }
-    }
 
-}
 
