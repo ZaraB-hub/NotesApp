@@ -1,5 +1,6 @@
 package com.example.notesapp
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import java.util.*
 
 @Composable
 fun NoteScreen(navController: NavController){
@@ -35,11 +37,23 @@ fun NoteScreen(navController: NavController){
 fun NotePage(navController:NavController,modifier: Modifier=Modifier){
     var title by remember { mutableStateOf("Title") }
     var body by remember { mutableStateOf("...") }
+    var timestamp= Date()
+
+//    // Create a new Notes object every time the text fields change
+//    val note = Notes(
+//        id = 3,
+//        title = title,
+//        body = body,
+//        timestamp = timestamp
+//    )
+//    Log.d("NotePage", note.toString())
+
+
     Column(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         TopAppBar(navController=navController)
-        Text("1/4/2023, 16:43",modifier=Modifier.fillMaxWidth(),
+        Text("${timestamp}",modifier=Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,color= Color.DarkGray)
         BasicTextField(
             value = title,
@@ -55,7 +69,20 @@ fun NotePage(navController:NavController,modifier: Modifier=Modifier){
             textStyle = TextStyle(fontSize = 16.sp,  )
         )
 
+        Button(
+            onClick = {
+                val newNote = Note(
+                    id =3,
+                    title = title,
+                    body = body,
+                    timestamp = timestamp)
 
+
+            },
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Text("Save")
+        }
 
     }
 }

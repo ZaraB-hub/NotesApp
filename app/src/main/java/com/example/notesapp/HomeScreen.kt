@@ -36,27 +36,16 @@ fun HomeScreen(
     MyApp(navController=navController)
 }
 
-data class Notes(val id:Int,val title:String,val body:String,val timestamp:Date){
-    val formattedTimestamp: String
-        get() = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(timestamp)
-}
-
-val items = listOf(
-    Notes(id = 1,
-        title = "Things to buy",
-        body = "djfjsdjdkjfkdjgkdjfgjdkfjgfdkgj",
-        timestamp = Date()),
-
-)
-
-
 @Composable
 fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
+//    val notesList = remember { mutableStateListOf<Note>() }
+//    notesList.add(Note(1,"New Note","My Text",Date()))
+
     Surface(color = Color.Blue.copy(alpha = .1f)) {
         Box(modifier.fillMaxSize()) {
             Column(Modifier.fillMaxSize()) {
                 MainTopBar()
-                NotesList(notes = items,navController=navController)
+                NotesList(notesList = notesList,navController=navController)
             }
             Row(
                 modifier = Modifier
@@ -77,7 +66,7 @@ fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun noteCustom(note: Notes,modifier: Modifier=Modifier,navController: NavController) {
+fun noteCustom(note: Note,modifier: Modifier=Modifier,navController: NavController) {
     Surface(
         color = Color.White,
         shape = RoundedCornerShape(15),
@@ -114,10 +103,10 @@ fun noteCustom(note: Notes,modifier: Modifier=Modifier,navController: NavControl
 }
 
 @Composable
-fun NotesList(notes:List<Notes>,modifier: Modifier=Modifier,navController: NavController){
+fun NotesList(notesList:List<Note>,modifier: Modifier=Modifier,navController: NavController){
     LazyColumn(contentPadding = PaddingValues(12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        items(items){
+        items(notesList){
                 note->noteCustom(note = note, navController = navController)
             // Divider(color=Color.LightGray.copy(alpha = 0.8f), thickness = 2.dp)
         }
@@ -164,7 +153,7 @@ fun MainTopBar(){
 @Composable
 fun DefaultPreview() {
     NotesAppTheme {
-        noteCustom(note =Notes(id = 1,
+        noteCustom(note =Note(id = 1,
             title = "Things to bye",
             body = "bye djfjsdjdkjfkdjgkdjfgjdkfjgfdkgj",
             timestamp = Date()),
