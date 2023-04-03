@@ -49,7 +49,11 @@ fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.End
             ) {
-                FloatingActionButton(onClick = { navController.currentBackStackEntry?.savedStateHandle?.remove<Note>("note")
+                FloatingActionButton(onClick = {
+                    val newNote = Note()
+                    notesList.add(newNote)
+                    navController.currentBackStackEntry?.savedStateHandle?.set("note",newNote)
+//                    navController.currentBackStackEntry?.savedStateHandle?.remove<Note>("note")
                     navController.navigate(route=Screen.Note.route) }, shape = CircleShape, modifier = Modifier
                     .width(60.dp)
                     .height(60.dp), containerColor = Color.hsl(270f,0.5f,0.75f), contentColor = Color.White) {

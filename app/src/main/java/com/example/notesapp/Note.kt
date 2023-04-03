@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Parcelize
-class Note(val id:Int=Random().nextInt(Int.MAX_VALUE),var title:String?,var body:String?,var timestamp: Date) :Parcelable
+class Note(val id:Int=Random().nextInt(Int.MAX_VALUE),var title:String?="Empty Note",var body:String?=null,var timestamp: Date=Date()) :Parcelable
 {
     val formattedTimestamp: String
         get() = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(timestamp)

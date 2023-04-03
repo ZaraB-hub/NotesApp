@@ -48,7 +48,7 @@ fun NotePage(note:Note?,navController:NavController,modifier: Modifier=Modifier)
         TopAppBar(navController=navController)
         Text("${timestamp}",modifier=Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,color= Color.DarkGray)
-        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+        Spacer(modifier = Modifier.padding(vertical = 8.dp))
         BasicTextField(
             value = title,
             onValueChange = {title=it},
@@ -68,7 +68,7 @@ fun NotePage(note:Note?,navController:NavController,modifier: Modifier=Modifier)
                 if (note != null) {
                     note.title = title
                     note.body = body
-                    note.timestamp = timestamp
+                    note.timestamp = Date()
                 }
 
             },
