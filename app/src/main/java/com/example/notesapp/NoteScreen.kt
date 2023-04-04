@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
@@ -42,43 +43,57 @@ fun NotePage(note:Note?,navController:NavController,modifier: Modifier=Modifier)
 
 
 
-    Column(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
-    ) {
-        TopAppBar(navController=navController)
-        Text("${timestamp}",modifier=Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,color= Color.DarkGray)
-        Spacer(modifier = Modifier.padding(vertical = 8.dp))
-        BasicTextField(
-            value = title,
-            onValueChange = {title=it},
-            cursorBrush = SolidColor(Color.Green),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = null),
-            textStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight(400) )
-        )
-        Spacer(modifier = Modifier.padding(8.dp))
-        BasicTextField(value =body, onValueChange ={body=it},            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = null),
-            textStyle = TextStyle(fontSize = 16.sp,  )
-        )
-
-        Button(
-            onClick = {
-                if (note != null) {
-                    note.title = title
-                    note.body = body
-                    note.timestamp = Date()
-                }
-
-            },
-            modifier = Modifier.align(Alignment.End)
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
         ) {
-            Text("Save")
-        }
+            TopAppBar(navController = navController)
+            Text(
+                SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(timestamp),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                color = Color.DarkGray
+            )
+            Spacer(modifier = Modifier.padding(vertical = 8.dp))
+            BasicTextField(
+                value = title,
+                onValueChange = { title = it },
+                cursorBrush = SolidColor(Color.Green),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = null),
+                textStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight(400))
+            )
+            Spacer(modifier = Modifier.padding(8.dp))
+            BasicTextField(
+                value = body,
+                onValueChange = { body = it },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = null),
+                textStyle = TextStyle(fontSize = 16.sp,),
+                modifier= Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            )
 
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                Button(
+                    onClick = {
+                        if (note != null) {
+                            note.title = title
+                            note.body = body
+                            note.timestamp = Date()
+                        }
+
+                    },
+                ) {
+                    Text("Save")
+                }
+            }
+        }
     }
-}
+
+
+
+
 @Composable
 fun TopAppBar(navController: NavController){
     Row(modifier =Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween) {

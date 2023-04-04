@@ -17,10 +17,11 @@ fun SetupNavGraph(
 //        ){
 //            SplashScreen(navController=navController)
 //        }
-        composable(
-            route=Screen.Home.route
-        ){
+        composable(route=Screen.Home.route){
             HomeScreen(navController=navController)
+        }
+        composable(route=Screen.Search.route){
+            SearchScreen(navController=navController)
         }
         composable(
             route=Screen.Note.route

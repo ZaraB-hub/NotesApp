@@ -14,7 +14,7 @@ class Note(val id:Int=Random().nextInt(Int.MAX_VALUE),var title:String?="Empty N
 }
 
 var notesList = mutableListOf(
-    Note(title = "Bela", body = "My name is Bela", timestamp = Date()),
+    Note(title = "Bela", body = "My name is Bela", timestamp = Date(58437593)),
     Note(title = "Zara", body = "My name is Zara", timestamp = Date()),
     Note(title = "Zlatan", body = "My name is Zlatan", timestamp=Date())
 )
