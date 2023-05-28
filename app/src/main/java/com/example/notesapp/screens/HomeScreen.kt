@@ -1,6 +1,7 @@
 package com.example.notesapp
 
 import android.content.res.Configuration
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -60,13 +61,12 @@ fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.End
             ) {
                 FloatingActionButton(onClick = {
-                    val newNote = noteRepository.addNewNote()
-                    navController.currentBackStackEntry?.savedStateHandle?.set("note",newNote)
-                    navController.navigate(route=Screen.Note.route)
+
+                    navController.navigate(route=Screen.Add.route)
                                                }
                     , shape = CircleShape, modifier = Modifier
-                    .width(60.dp)
-                    .height(60.dp), containerColor = Color.hsl(270f,0.5f,0.75f), contentColor = Color.White) {
+                        .width(60.dp)
+                        .height(60.dp), containerColor = Color.hsl(270f,0.5f,0.75f), contentColor = Color.White) {
                     Icon(Icons.Filled.Add, "Create Note",modifier=Modifier.size(55.dp))
                 }
             }
@@ -77,10 +77,7 @@ fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun NoteCustom(note: com.example.notesapp.data.Note, navController: NavController) {
-    val context  = LocalContext.current
-
-
+fun NoteCustom(note: com.example.notesapp.data.Note, navController: NavController,noteViewModel: NoteViewModel) {
     Surface(
         color = Color.White,
         shape = RoundedCornerShape(15),
@@ -88,14 +85,12 @@ fun NoteCustom(note: com.example.notesapp.data.Note, navController: NavControlle
             .padding(vertical = 4.dp, horizontal = 8.dp)
             .combinedClickable(
                 onClick = {
-
+                    navController.navigate("note_screen/" + note.id)
                 },
                 onLongClick = {
-
+                    noteViewModel.delete(note)
                 }
             )
-
-
 
     ) {
         Column(
@@ -128,13 +123,12 @@ fun NoteCustom(note: com.example.notesapp.data.Note, navController: NavControlle
 @Composable
 fun NotesList(noteViewModel: NoteViewModel, navController: NavController) {
     val notesList by noteViewModel.allNotes.collectAsState(initial = emptyList())
-
     LazyColumn(
         contentPadding = PaddingValues(12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(notesList) { note ->
-            NoteCustom(note = note, navController = navController)
+            NoteCustom(note = note, navController = navController,noteViewModel=noteViewModel)
         }
     }
 }
@@ -185,7 +179,7 @@ fun CustomNoteObjectPreview() {
             title = "Things to bye",
             body = "bye",
             ),
-        navController = rememberNavController())
+        navController = rememberNavController(), viewModel())
     }
 }
 
@@ -229,7 +223,9 @@ fun NavDrawer(
         .fillMaxHeight()
         .width(300.dp)
         .padding(top = 20.dp, end = 100.dp) ){
-        Column (modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)){
+        Column (modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)){
             Text(text = "NotesApp", fontSize = 20.sp,modifier = Modifier.padding(start = 10.dp))
             Spacer(modifier = Modifier.padding(8.dp))
             Divider(thickness = 0.5.dp,color = Color.Gray)

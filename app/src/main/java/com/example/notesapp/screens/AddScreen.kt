@@ -1,4 +1,5 @@
-package com.example.notesapp
+package com.example.notesapp.screens
+
 
 import android.util.Log
 import androidx.compose.foundation.layout.*
@@ -29,66 +30,59 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun NoteScreen(navController: NavController,id:Int?){
+fun AddScreen(navController: NavController){
 
-    val id=id?.toLong()
-    if (id != null) {
-        NotePage(noteViewModel = viewModel(), id = id, navController = navController)
-    }
+        NotePage(noteViewModel = viewModel(), navController = navController)
 
-    }
+}
 
 @Composable
-fun NotePage(noteViewModel: NoteViewModel,id:Long, navController:NavController, modifier: Modifier=Modifier){
-    val note by noteViewModel.getNoteById(id).collectAsState(initial = null)
-    var titleValue by remember { mutableStateOf(note?.title?:"title" ) } 
-    var bodyValue by remember { mutableStateOf(note?.body ?: "body") }
+fun NotePage(noteViewModel: NoteViewModel, navController:NavController, modifier: Modifier=Modifier){
+    var titleValue by remember { mutableStateOf("Title" ) }
+    var bodyValue by remember { mutableStateOf( "...") }
 
-    LaunchedEffect(note?.title) {
-        titleValue = note?.title ?: "title"
-        bodyValue=note?.body?:""
-    }
-    Log.d("1","${note?.title}")
-    Log.d("2",titleValue)
-        
+
+
+
     Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
-        ) {
-            TopAppBar(navController = navController)
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
+    ) {
+        TopAppBar(navController = navController)
 
-            BasicTextField(
-                value = titleValue,
-                onValueChange = { titleValue=it},
-                cursorBrush = SolidColor(Color.Green),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = null),
-                textStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight(400))
-            )
-            Spacer(modifier = Modifier.padding(8.dp))
-            BasicTextField(
-                value = bodyValue,
-                onValueChange = { bodyValue=it },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = null),
-                textStyle = TextStyle(fontSize = 16.sp,),
-                modifier= Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            )
+        BasicTextField(
+            value = titleValue,
+            onValueChange = { titleValue=it},
+            cursorBrush = SolidColor(Color.Green),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = null),
+            textStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight(400))
+        )
+        Spacer(modifier = Modifier.padding(8.dp))
+        BasicTextField(
+            value = bodyValue,
+            onValueChange = { bodyValue=it },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = null),
+            textStyle = TextStyle(fontSize = 16.sp,),
+            modifier= Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        )
 
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                Button(
-                    onClick = {
-                        note!!.title=titleValue
-                        note!!.body=bodyValue
-                        noteViewModel.upsert(note!!)
-                    },
-                ) {
-                    Text("Save")
-                }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            Button(
+                onClick = {
+                    var note=com.example.notesapp.data.Note()
+                    note.title=titleValue
+                    note.body=bodyValue
+                    noteViewModel.upsert(note)
+                },
+            ) {
+                Text("Save")
             }
         }
     }
+}
 
 
 
@@ -100,10 +94,10 @@ fun TopAppBar(navController: NavController){
             .width(25.dp)
             .height(25.dp)
             .offset(y = 8.dp)
-            ) {
+        ) {
             Icon(
                 Icons.Filled.ArrowBack, contentDescription = "Localized description",
-               )
+            )
         }
         OptionMenu(modifier = Modifier.fillMaxSize())
     }
@@ -144,9 +138,3 @@ fun OptionMenu(modifier: Modifier=Modifier) {
     }
 }
 
-
-@Preview (showBackground =true )
-@Composable
-fun prevTop(){
-    TopAppBar(navController = rememberNavController())
-}

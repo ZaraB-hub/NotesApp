@@ -11,15 +11,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.notesapp.data.Note
 import com.example.notesapp.data.NoteViewModel
 
 @Composable
-fun InsertScreen(noteViewModel:NoteViewModel) {
+fun InsertScreen(noteViewModel:NoteViewModel,navController:NavController,id:Int?) {
+
     val titleState = remember { mutableStateOf("") }
     val bodyState = remember { mutableStateOf("") }
 
     Column(modifier = Modifier.padding(16.dp)) {
+
         OutlinedTextField(
             value = titleState.value,
             onValueChange = { titleState.value = it },
