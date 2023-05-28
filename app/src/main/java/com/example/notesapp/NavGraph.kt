@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.notesapp.screens.AddScreen
-import com.example.notesapp.screens.InsertScreen
+
 
 
 @Composable
@@ -21,15 +21,6 @@ fun SetupNavGraph(
 
         composable(route=Screen.Home.route){
             HomeScreen(navController=navController)
-        }
-        composable(route=Screen.Insert.route,
-        arguments= listOf(navArgument("id"){
-            type= NavType.IntType
-        })
-        ){
-
-            val NoteId=it.arguments?.getInt("id")
-            InsertScreen(viewModel(),navController=navController,id=NoteId)
         }
         composable(route=Screen.Search.route){
             SearchScreen(navController=navController)
