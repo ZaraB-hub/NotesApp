@@ -14,12 +14,8 @@ fun SetupNavGraph(
     navController: NavHostController
 ){
     NavHost(navController = navController,
-    startDestination = Screen.Insert.route){
-//        composable(
-//            route=Screen.Splash.route
-//        ){
-//            SplashScreen(navController=navController)
-//        }
+    startDestination = Screen.Home.route){
+
         composable(route=Screen.Home.route){
             HomeScreen(navController=navController)
         }
