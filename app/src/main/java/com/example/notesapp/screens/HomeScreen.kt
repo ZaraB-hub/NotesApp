@@ -166,7 +166,7 @@ fun MainTopBar(navController: NavController){
 
                 )
             }
-            OptionMenu()
+
         }
     )
 }

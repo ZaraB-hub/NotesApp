@@ -1,5 +1,6 @@
 package com.example.notesapp
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -21,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -54,8 +57,8 @@ fun NotePage(noteViewModel: NoteViewModel,id:Int, navController:NavController, m
     Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
         ) {
-        val focusManager = LocalFocusManager.current
-            TopAppBar(navController = navController)
+            val focusManager = LocalFocusManager.current
+        note?.let { TopAppBar(navController = navController,noteViewModel=noteViewModel,note= it) }
 
             BasicTextField(
                 value = titleValue,
@@ -95,7 +98,7 @@ fun NotePage(noteViewModel: NoteViewModel,id:Int, navController:NavController, m
 
 
 @Composable
-fun TopAppBar(navController: NavController){
+fun TopAppBar(navController: NavController,noteViewModel: NoteViewModel,note: com.example.notesapp.data.Note){
     Row(modifier =Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween) {
         IconButton(onClick = { navController.popBackStack() }, modifier = Modifier
             .width(25.dp)
@@ -106,13 +109,14 @@ fun TopAppBar(navController: NavController){
                 Icons.Filled.ArrowBack, contentDescription = "Localized description",
                )
         }
-        OptionMenu(modifier = Modifier.fillMaxSize())
+        OptionMenu(modifier = Modifier.fillMaxSize(),noteViewModel=noteViewModel,note=note, navController = navController)
     }
 }
 
 @Composable
-fun OptionMenu(modifier: Modifier=Modifier) {
+fun OptionMenu(modifier: Modifier=Modifier,noteViewModel: NoteViewModel,note: com.example.notesapp.data.Note,navController: NavController) {
     var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     Box(modifier = Modifier
         .wrapContentSize()) {
         IconButton(onClick = { expanded = true }) {
@@ -124,7 +128,8 @@ fun OptionMenu(modifier: Modifier=Modifier) {
         ) {
             DropdownMenuItem(
                 text = { Text("Delete") },
-                onClick = { /* Handle edit! */ },
+                onClick = { noteViewModel.delete(note)
+                            navController.popBackStack()},
                 leadingIcon = {
                     Icon(
                         Icons.Outlined.Delete,
@@ -133,7 +138,19 @@ fun OptionMenu(modifier: Modifier=Modifier) {
                 })
             DropdownMenuItem(
                 text = { Text("Share") },
-                onClick = { /* Handle settings! */ },
+                onClick = {
+                    val sendIntent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        val noteText = "${note.title}\n\n${note.body}"
+                        putExtra(Intent.EXTRA_TEXT, noteText)
+                        type = "text/plain"
+                    }
+                    val title: String = "Share this note with:"
+                    val chooser: Intent = Intent.createChooser(sendIntent, title)
+                   startActivity(context,chooser,null)
+
+
+                },
                 leadingIcon = {
                     Icon(
                         Icons.Outlined.Share,
@@ -146,8 +163,3 @@ fun OptionMenu(modifier: Modifier=Modifier) {
 }
 
 
-@Preview (showBackground =true )
-@Composable
-fun prevTop(){
-    TopAppBar(navController = rememberNavController())
-}
