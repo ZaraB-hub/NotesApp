@@ -1,7 +1,6 @@
-package com.example.notesapp
+package com.example.notesapp.old
 
 import android.os.Parcelable
-import androidx.versionedparcelable.ParcelField
 import kotlinx.parcelize.Parcelize
 import java.text.SimpleDateFormat
 import java.util.*

@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,8 +17,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ModifierInfo
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,6 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.notesapp.old.Note
+import com.example.notesapp.old.NoteRepository
+import com.example.notesapp.old.notesList
 import com.example.notesapp.ui.theme.NotesAppTheme
 import java.util.*
 
@@ -41,7 +41,7 @@ fun HomeScreen(
 @Composable
 fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
 
-    val noteRepository=NoteRepository(notesList)
+    val noteRepository= NoteRepository(notesList)
 
     Surface(color = Color.Blue.copy(alpha = .1f)) {
         Box(modifier.fillMaxSize()) {
@@ -73,9 +73,9 @@ fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun NoteCustom(note: Note,navController: NavController) {
+fun NoteCustom(note: Note, navController: NavController) {
     val context  = LocalContext.current
-    val noteRepository=NoteRepository(notesList)
+    val noteRepository= NoteRepository(notesList)
 
     Surface(
         color = Color.White,
@@ -130,7 +130,7 @@ fun NoteCustom(note: Note,navController: NavController) {
 }
 
 @Composable
-fun NotesList(notesList:List<Note>,navController: NavController){
+fun NotesList(notesList:List<Note>, navController: NavController){
     LazyColumn(contentPadding = PaddingValues(12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)) {
         items(notesList ){
@@ -182,7 +182,7 @@ fun MainTopBar(navController: NavController){
 @Composable
 fun CustomNoteObjectPreview() {
     NotesAppTheme {
-        NoteCustom(note =Note(id = 1,
+        NoteCustom(note = Note(id = 1,
             title = "Things to bye",
             body = "bye",
             timestamp = Date()),
