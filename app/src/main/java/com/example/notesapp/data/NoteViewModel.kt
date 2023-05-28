@@ -27,8 +27,12 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         noteDao.delete(note)
     }
 
-    fun getNoteById(noteId: Long): Flow<Note?> {
+    fun getNoteById(noteId: Int): Flow<Note?> {
         return noteDao.getNoteById(noteId)
+    }
+
+    fun getNotesByTitle(searchTitle: String): Flow<List<Note>>{
+        return noteDao.getNotesByTitle(searchTitle)
     }
 }
 

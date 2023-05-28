@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -48,13 +49,13 @@ fun NotePage(noteViewModel: NoteViewModel, navController:NavController, modifier
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
     ) {
         TopAppBar(navController = navController)
-
+        val focusManager = LocalFocusManager.current
         BasicTextField(
             value = titleValue,
             onValueChange = { titleValue=it},
             cursorBrush = SolidColor(Color.Green),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = null),
+            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
             textStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight(400))
         )
         Spacer(modifier = Modifier.padding(8.dp))
@@ -62,7 +63,7 @@ fun NotePage(noteViewModel: NoteViewModel, navController:NavController, modifier
             value = bodyValue,
             onValueChange = { bodyValue=it },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = null),
+            keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
             textStyle = TextStyle(fontSize = 16.sp,),
             modifier= Modifier
                 .weight(1f)
@@ -72,9 +73,7 @@ fun NotePage(noteViewModel: NoteViewModel, navController:NavController, modifier
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             Button(
                 onClick = {
-                    var note=com.example.notesapp.data.Note()
-                    note.title=titleValue
-                    note.body=bodyValue
+                    var note=com.example.notesapp.data.Note(title = titleValue,body=bodyValue)
                     noteViewModel.upsert(note)
                 },
             ) {

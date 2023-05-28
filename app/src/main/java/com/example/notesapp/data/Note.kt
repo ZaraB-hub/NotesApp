@@ -9,9 +9,8 @@ import java.util.*
 @Entity(tableName = "notes")
 class Note(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "title") var title: String? = "Empty Note",
-    @ColumnInfo(name = "content") var body: String? = null,
-    @ColumnInfo(name = "timestamp") var timestamp: Long=System.currentTimeMillis()
-
+    @ColumnInfo(name = "title") var title: String,
+    @ColumnInfo(name = "content") var body: String,
+    @ColumnInfo(name = "timestamp") var timestamp: String = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
 
 )

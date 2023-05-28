@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -31,15 +32,14 @@ import java.util.*
 @Composable
 fun NoteScreen(navController: NavController,id:Int?){
 
-    val id=id?.toLong()
     if (id != null) {
         NotePage(noteViewModel = viewModel(), id = id, navController = navController)
     }
 
-    }
+}
 
 @Composable
-fun NotePage(noteViewModel: NoteViewModel,id:Long, navController:NavController, modifier: Modifier=Modifier){
+fun NotePage(noteViewModel: NoteViewModel,id:Int, navController:NavController, modifier: Modifier=Modifier){
     val note by noteViewModel.getNoteById(id).collectAsState(initial = null)
     var titleValue by remember { mutableStateOf(note?.title?:"title" ) } 
     var bodyValue by remember { mutableStateOf(note?.body ?: "body") }
@@ -54,6 +54,7 @@ fun NotePage(noteViewModel: NoteViewModel,id:Long, navController:NavController, 
     Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
         ) {
+        val focusManager = LocalFocusManager.current
             TopAppBar(navController = navController)
 
             BasicTextField(
@@ -61,7 +62,7 @@ fun NotePage(noteViewModel: NoteViewModel,id:Long, navController:NavController, 
                 onValueChange = { titleValue=it},
                 cursorBrush = SolidColor(Color.Green),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = null),
+                keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
                 textStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight(400))
             )
             Spacer(modifier = Modifier.padding(8.dp))
@@ -69,7 +70,7 @@ fun NotePage(noteViewModel: NoteViewModel,id:Long, navController:NavController, 
                 value = bodyValue,
                 onValueChange = { bodyValue=it },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = null),
+                keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
                 textStyle = TextStyle(fontSize = 16.sp,),
                 modifier= Modifier
                     .weight(1f)
