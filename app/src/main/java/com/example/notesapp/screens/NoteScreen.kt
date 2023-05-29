@@ -51,9 +51,7 @@ fun NotePage(noteViewModel: NoteViewModel,id:Int, navController:NavController, m
         titleValue = note?.title ?: "title"
         bodyValue=note?.body?:""
     }
-    Log.d("1","${note?.title}")
-    Log.d("2",titleValue)
-        
+
     Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
         ) {
