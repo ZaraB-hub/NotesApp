@@ -1,7 +1,6 @@
-package com.example.notesapp
+package com.example.notesapp.screens
 
 import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -19,7 +18,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,9 +26,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.notesapp.data.NoteViewModel
-import com.example.notesapp.old.Note
-import java.text.SimpleDateFormat
-import java.util.*
 
 @Composable
 fun NoteScreen(navController: NavController,id:Int?){
@@ -72,7 +67,7 @@ fun NotePage(noteViewModel: NoteViewModel,id:Int, navController:NavController, m
                 onValueChange = { bodyValue=it },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
-                textStyle = TextStyle(fontSize = 16.sp,),
+                textStyle = TextStyle(fontSize = 16.sp),
                 modifier= Modifier
                     .weight(1f)
                     .fillMaxWidth()
@@ -92,7 +87,11 @@ fun NotePage(noteViewModel: NoteViewModel,id:Int, navController:NavController, m
         }
     }
 
-
+@Preview
+@Composable
+fun Prev(){
+    NotePage(noteViewModel = viewModel() , id =3, navController = rememberNavController())
+}
 
 
 @Composable
@@ -143,7 +142,7 @@ fun OptionMenu(modifier: Modifier=Modifier,noteViewModel: NoteViewModel,note: co
                         putExtra(Intent.EXTRA_TEXT, noteText)
                         type = "text/plain"
                     }
-                    val title: String = "Share this note with:"
+                    val title= "Share this note with:"
                     val chooser: Intent = Intent.createChooser(sendIntent, title)
                    startActivity(context,chooser,null)
 

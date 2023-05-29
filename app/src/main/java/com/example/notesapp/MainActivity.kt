@@ -35,7 +35,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.notesapp.ui.theme.NotesAppTheme
 
-import com.example.notesapp.NotePage
+
 
 class MainActivity : ComponentActivity() {
     lateinit var navController:NavHostController
