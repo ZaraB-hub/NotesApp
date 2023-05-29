@@ -53,29 +53,11 @@ fun NotePage(noteViewModel: NoteViewModel,id:Int, navController:NavController, m
             val focusManager = LocalFocusManager.current
         note?.let { TopAppBar(navController = navController,noteViewModel=noteViewModel,note= it) }
 
-        Spacer(modifier=Modifier.height(4.dp))
-        TextField(
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            textStyle = MaterialTheme.typography.titleLarge,
-            placeholder = {
-                Text(
-                    text = "Title",
-                    style = MaterialTheme.typography.titleLarge.copy(color = Color.LightGray)
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth(),
-            value = titleValue,
-            onValueChange = { newTitle -> titleValue = newTitle })
+            Spacer(modifier=Modifier.height(8.dp))
             BasicTextField(
                 value = titleValue,
                 onValueChange = { titleValue=it},
-                cursorBrush = SolidColor(Color.Green),
+                cursorBrush = SolidColor(Color.Black),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
                 textStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight(400))
@@ -175,8 +157,8 @@ fun OptionMenu(modifier: Modifier=Modifier,noteViewModel: NoteViewModel,note: co
                 })
             DropdownMenuItem(
                 text = { Text("Make a copy") },
-                onClick = { noteViewModel.delete(note)
-                    navController.popBackStack()},
+                onClick = { note.id=0
+                            noteViewModel.upsert(note)},
                 leadingIcon = {
                     Icon(
                         Icons.Outlined.Create,

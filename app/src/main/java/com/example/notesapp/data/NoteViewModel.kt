@@ -22,9 +22,16 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     fun upsert(note: Note) = viewModelScope.launch {
         noteDao.upsert(note)
     }
-
     fun delete(note: Note) = viewModelScope.launch {
         noteDao.delete(note)
+    }
+
+    fun add(note: Note) = viewModelScope.launch {
+        noteDao.add(note)
+    }
+
+    fun update(note: Note) = viewModelScope.launch {
+        noteDao.update(note)
     }
 
     fun getNoteById(noteId: Int): Flow<Note?> {
@@ -34,5 +41,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     fun getNotesByTitle(searchTitle: String): Flow<List<Note>>{
         return noteDao.getNotesByTitle(searchTitle)
     }
+
+    fun getNoteCount(): Flow<Int> =noteDao.getNoteCount()
 }
 

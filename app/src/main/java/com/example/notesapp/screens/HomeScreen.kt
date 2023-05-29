@@ -20,6 +20,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -89,7 +90,7 @@ fun NoteCustom(note: com.example.notesapp.data.Note, navController: NavControlle
         color = Color.White,
         shape = RoundedCornerShape(15),
         modifier = Modifier
-            .padding(vertical = 4.dp, horizontal = 8.dp)
+            .padding(bottom = 8.dp, top = 8.dp, start = 5.dp)
             .combinedClickable(
                 onClick = {
                     navController.navigate("note_screen/" + note.id)
@@ -127,6 +128,7 @@ fun NoteCustom(note: com.example.notesapp.data.Note, navController: NavControlle
     }
 }
 
+
 @Composable
 fun NotesList(noteViewModel: NoteViewModel, navController: NavController) {
     val notesList by noteViewModel.allNotes.collectAsState(initial = emptyList())
@@ -143,6 +145,7 @@ fun NotesList(noteViewModel: NoteViewModel, navController: NavController) {
                     navController = navController,
                     noteViewModel = noteViewModel
                 )
+
             }
 
         }
@@ -156,6 +159,7 @@ fun NotesGrid(noteViewModel: NoteViewModel, navController: NavController) {
     if(notesList.isEmpty()){
         DefaultContent()
     }else {
+        Spacer(modifier=Modifier.height(10.dp))
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 150.dp)
         ) {
@@ -179,9 +183,9 @@ fun MainTopBar(
         title = {
             Text(
                 "Notes",
-                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                fontSize =25.sp
+                fontSize =30.sp,
+                fontWeight = FontWeight.Bold
             )
         },
         navigationIcon = {
@@ -206,7 +210,7 @@ fun MainTopBar(
             }
             IconButton(onClick = { onLayoutToggle(!layout) }) {
                 Icon(
-                    painter = if (layout) painterResource(R.drawable.baseline_view_list_24) else painterResource(R.drawable.baseline_grid_view_24),
+                    painter = if (!layout) painterResource(R.drawable.baseline_view_list_24) else painterResource(R.drawable.baseline_grid_view_24),
                     contentDescription = "Localized description",
                     Modifier
                         .fillMaxSize()
@@ -244,29 +248,6 @@ fun ColumnPreview() {
     NotesAppTheme {
         MyApp(navController = rememberNavController())
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun Bottom(){
-               Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = Color.White)
-                    .padding(horizontal = 10.dp, vertical = 10.dp),
-                horizontalArrangement = Arrangement.spacedBy(250.dp),
-                verticalAlignment = Alignment.Bottom
-            ) {
-                   FloatingActionButton(
-                       onClick = {}, shape = CircleShape, modifier = Modifier
-                           .width(60.dp)
-                           .height(60.dp),
-                       elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp, hoveredElevation = 22.dp),
-                       containerColor = Color.hsl(270f, 0.5f, 0.75f), contentColor = Color.White
-                   ) {
-                       Icon(Icons.Filled.Delete, "Create Note", modifier = Modifier.size(55.dp))
-                   }
-               }
 }
 
 
