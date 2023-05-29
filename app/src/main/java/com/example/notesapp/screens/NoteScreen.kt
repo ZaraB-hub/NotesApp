@@ -1,8 +1,6 @@
-package com.example.notesapp
+package com.example.notesapp.screens
 
-import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -12,63 +10,64 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.notesapp.data.NoteViewModel
 
 @Composable
-fun NoteScreen(navController: NavController){
-    val sentNote = navController.previousBackStackEntry?.savedStateHandle?.get<Note>("note")
-    NotePage(sentNote,navController=navController)
+fun NoteScreen(navController: NavController,id:Int?){
+
+    if (id != null) {
+        NotePage(noteViewModel = viewModel(), id = id, navController = navController)
     }
 
+}
+
 @Composable
-fun NotePage(note:Note?,navController:NavController,modifier: Modifier=Modifier){
-    var title by remember { mutableStateOf(note?.title ?: "Title") }
-    var body by remember { mutableStateOf(note?.body ?: "...") }
-    var timestamp= note?.timestamp ?: Date()
+fun NotePage(noteViewModel: NoteViewModel,id:Int, navController:NavController, modifier: Modifier=Modifier){
+    val note by noteViewModel.getNoteById(id).collectAsState(initial = null)
+    var titleValue by remember { mutableStateOf(note?.title?:"title" ) } 
+    var bodyValue by remember { mutableStateOf(note?.body ?: "body") }
 
+    LaunchedEffect(note?.title) {
+        titleValue = note?.title ?: "title"
+        bodyValue=note?.body?:""
+    }
 
-
-        Column(
+    Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
         ) {
-            TopAppBar(navController = navController)
-            Text(
-                SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(timestamp),
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                color = Color.DarkGray
-            )
-            Spacer(modifier = Modifier.padding(vertical = 8.dp))
+            val focusManager = LocalFocusManager.current
+        note?.let { TopAppBar(navController = navController,noteViewModel=noteViewModel,note= it) }
+
             BasicTextField(
-                value = title,
-                onValueChange = { title = it },
+                value = titleValue,
+                onValueChange = { titleValue=it},
                 cursorBrush = SolidColor(Color.Green),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = null),
+                keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
                 textStyle = TextStyle(fontSize = 32.sp, fontWeight = FontWeight(400))
             )
             Spacer(modifier = Modifier.padding(8.dp))
             BasicTextField(
-                value = body,
-                onValueChange = { body = it },
+                value = bodyValue,
+                onValueChange = { bodyValue=it },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = null),
-                textStyle = TextStyle(fontSize = 16.sp,),
+                keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
+                textStyle = TextStyle(fontSize = 16.sp),
                 modifier= Modifier
                     .weight(1f)
                     .fillMaxWidth()
@@ -77,12 +76,9 @@ fun NotePage(note:Note?,navController:NavController,modifier: Modifier=Modifier)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 Button(
                     onClick = {
-                        if (note != null) {
-                            note.title = title
-                            note.body = body
-                            note.timestamp = Date()
-                        }
-
+                        note!!.title=titleValue
+                        note!!.body=bodyValue
+                        noteViewModel.upsert(note!!)
                     },
                 ) {
                     Text("Save")
@@ -91,11 +87,15 @@ fun NotePage(note:Note?,navController:NavController,modifier: Modifier=Modifier)
         }
     }
 
-
+@Preview
+@Composable
+fun Prev(){
+    NotePage(noteViewModel = viewModel() , id =3, navController = rememberNavController())
+}
 
 
 @Composable
-fun TopAppBar(navController: NavController){
+fun TopAppBar(navController: NavController,noteViewModel: NoteViewModel,note: com.example.notesapp.data.Note){
     Row(modifier =Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween) {
         IconButton(onClick = { navController.popBackStack() }, modifier = Modifier
             .width(25.dp)
@@ -106,13 +106,14 @@ fun TopAppBar(navController: NavController){
                 Icons.Filled.ArrowBack, contentDescription = "Localized description",
                )
         }
-        OptionMenu(modifier = Modifier.fillMaxSize())
+        OptionMenu(modifier = Modifier.fillMaxSize(),noteViewModel=noteViewModel,note=note, navController = navController)
     }
 }
 
 @Composable
-fun OptionMenu(modifier: Modifier=Modifier) {
+fun OptionMenu(modifier: Modifier=Modifier,noteViewModel: NoteViewModel,note: com.example.notesapp.data.Note,navController: NavController) {
     var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     Box(modifier = Modifier
         .wrapContentSize()) {
         IconButton(onClick = { expanded = true }) {
@@ -124,7 +125,8 @@ fun OptionMenu(modifier: Modifier=Modifier) {
         ) {
             DropdownMenuItem(
                 text = { Text("Delete") },
-                onClick = { /* Handle edit! */ },
+                onClick = { noteViewModel.delete(note)
+                            navController.popBackStack()},
                 leadingIcon = {
                     Icon(
                         Icons.Outlined.Delete,
@@ -133,7 +135,19 @@ fun OptionMenu(modifier: Modifier=Modifier) {
                 })
             DropdownMenuItem(
                 text = { Text("Share") },
-                onClick = { /* Handle settings! */ },
+                onClick = {
+                    val sendIntent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        val noteText = "${note.title}\n\n${note.body}"
+                        putExtra(Intent.EXTRA_TEXT, noteText)
+                        type = "text/plain"
+                    }
+                    val title= "Share this note with:"
+                    val chooser: Intent = Intent.createChooser(sendIntent, title)
+                   startActivity(context,chooser,null)
+
+
+                },
                 leadingIcon = {
                     Icon(
                         Icons.Outlined.Share,
@@ -144,14 +158,5 @@ fun OptionMenu(modifier: Modifier=Modifier) {
         }
     }
 }
-@Preview(showSystemUi = true)
-@Composable
-fun prevNotes(){
-    NotePage(null,navController = rememberNavController())
-}
 
-@Preview (showBackground =true )
-@Composable
-fun prevTop(){
-    TopAppBar(navController = rememberNavController())
-}
+
