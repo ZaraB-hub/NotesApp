@@ -19,6 +19,9 @@ interface NoteDao {
     fun getAllNotes(): Flow<List<Note>>
     @Query("SELECT * FROM notes WHERE id = :noteId")
     fun getNoteById(noteId: Int): Flow<Note?>
+    @Query("SELECT * FROM notes WHERE folderId = :folderId")
+    fun getNotesByFolderId(folderId: Int): Flow<List<Note>>
+
     @Query("SELECT * FROM notes WHERE title LIKE '%' || :searchTitle || '%'")
     fun getNotesByTitle(searchTitle: String): Flow<List<Note>>
     @Query("SELECT COUNT(*) FROM notes")

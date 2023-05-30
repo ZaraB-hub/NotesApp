@@ -42,6 +42,10 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         return noteDao.getNotesByTitle(searchTitle)
     }
 
+    fun getNotesByFolder(folderId:Int): Flow<List<Note>>{
+        return noteDao.getNotesByFolderId(folderId)
+    }
+
     fun getNoteCount(): Flow<Int> =noteDao.getNoteCount()
 }
 

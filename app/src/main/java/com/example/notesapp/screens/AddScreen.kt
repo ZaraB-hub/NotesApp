@@ -25,20 +25,22 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.notesapp.MyApp1
 import com.example.notesapp.data.NoteViewModel
 import com.example.notesapp.old.Note
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun AddScreen(navController: NavController){
-
-        NotePage(noteViewModel = viewModel(), navController = navController)
-
+fun AddScreen(navController: NavController,
+              folderId:Int?){
+    if (folderId != null) {
+        NotePage(noteViewModel = viewModel(), navController = navController,folderId=folderId)
+    }
 }
 
 @Composable
-fun NotePage(noteViewModel: NoteViewModel, navController:NavController, modifier: Modifier=Modifier){
+fun NotePage(noteViewModel: NoteViewModel, navController:NavController, modifier: Modifier=Modifier,folderId: Int){
     var titleValue by remember { mutableStateOf("Title" ) }
     var bodyValue by remember { mutableStateOf( "...") }
 
@@ -73,7 +75,7 @@ fun NotePage(noteViewModel: NoteViewModel, navController:NavController, modifier
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             Button(
                 onClick = {
-                    var note=com.example.notesapp.data.Note(title = titleValue,body=bodyValue)
+                    var note=com.example.notesapp.data.Note(title = titleValue,body=bodyValue, folderId = folderId)
                     noteViewModel.upsert(note)
                 },
             ) {

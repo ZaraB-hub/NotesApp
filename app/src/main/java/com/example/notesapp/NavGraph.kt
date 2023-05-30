@@ -15,7 +15,7 @@ fun SetupNavGraph(
     navController: NavHostController
 ){
     NavHost(navController = navController,
-    startDestination = Screen.Home.route){
+    startDestination = Screen.Home1.route){
 
         composable(route=Screen.Home.route){
             HomeScreen(navController=navController)
@@ -23,16 +23,37 @@ fun SetupNavGraph(
         composable(route=Screen.Search.route){
             SearchScreen(navController=navController)
         }
-        composable(route=Screen.Add.route){
-            AddScreen(navController=navController)
+        composable(route = Screen.Add.route,
+            arguments = listOf(navArgument("folderId") {
+                type = NavType.IntType
+            })
+        ) {
+            val folderId = it.arguments?.getInt("folderId")
+            AddScreen(navController = navController, folderId = folderId)
+        }
+        composable(route=Screen.Folder.route){
+            FolderScreen(navController=navController)
         }
         composable(route=Screen.Note.route,
             arguments= listOf(navArgument("id"){
                 type= NavType.IntType
+            }, navArgument("folderId"){
+                type= NavType.IntType
+            }
+        )){
+            val noteId=it.arguments?.getInt("id")
+            val folderId=it.arguments?.getInt("folderId")
+            NoteScreen(navController=navController,id=noteId,folderId=folderId)
+        }
+
+        composable(route=Screen.Home1.route,
+            arguments= listOf(navArgument("id"){
+                type= NavType.IntType
+                defaultValue=1
             })
         ){
-            val noteId=it.arguments?.getInt("id")
-            NoteScreen(navController=navController,id=noteId)
+            val Id=it.arguments?.getInt("id")
+            HomeScreen1(navController=navController,id=Id)
         }
 
     }
