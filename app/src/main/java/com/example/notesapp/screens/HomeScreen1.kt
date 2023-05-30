@@ -1,10 +1,6 @@
 package com.example.notesapp
 
-import android.content.res.Configuration
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,46 +16,48 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.notesapp.components.DefaultContent
+import com.example.notesapp.data.Folder
+import com.example.notesapp.data.FolderViewModel
 import com.example.notesapp.data.NoteViewModel
-import com.example.notesapp.ui.theme.NotesAppTheme
+import kotlinx.coroutines.flow.Flow
 import java.util.*
 
 
 @Composable
-fun HomeScreen(
-    navController: NavController
-){
-    MyApp(navController=navController)
+fun HomeScreen1(
+    navController: NavController,
+    id: Int?
+) {
+    if (id != null) {
+        MyApp1(navController = navController, folderId = id, viewModel())
+    }
 }
 
+
 @Composable
-fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
+fun MyApp1(navController: NavController,folderId:Int,folderViewModel: FolderViewModel,modifier: Modifier = Modifier) {
+
+    var folder=folderViewModel.getFolderById(folderId = folderId)
     var listLayout by remember { mutableStateOf(true) }
     Surface(color = Color.Blue.copy(alpha = .1f)) {
         Box(modifier.fillMaxSize()) {
             Column(Modifier.fillMaxSize()) {
-                MainTopBar(listLayout, navController, onLayoutToggle = { newListLayout ->
+                MainTopBar1(listLayout, navController, onLayoutToggle = { newListLayout ->
                     listLayout = newListLayout
-                })
+                }, folder =folder)
                 if(listLayout){
-                    NotesList(viewModel(),navController=navController)
+                    NotesList1(viewModel(),navController=navController,folderId=folderId)
                 } else {
-                    NotesGrid(viewModel(), navController = navController)
+                    NotesGrid1(viewModel(), navController = navController,folderId=folderId)
                 }
             }
             Row(
@@ -70,7 +68,7 @@ fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.End
             ) {
-                FloatingActionButton(onClick = {navController.navigate(route="")}
+                FloatingActionButton(onClick = {navController.navigate(route="add_screen/"+folderId)}
                     ,shape = CircleShape, modifier = Modifier
                         .width(60.dp)
                         .height(60.dp),
@@ -85,7 +83,7 @@ fun MyApp(navController: NavController,modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun NoteCustom(note: com.example.notesapp.data.Note, navController: NavController,noteViewModel: NoteViewModel) {
+fun NoteCustom1(note: com.example.notesapp.data.Note, navController: NavController,noteViewModel: NoteViewModel,folderId: Int) {
     Surface(
         color = Color.White,
         shape = RoundedCornerShape(15),
@@ -93,7 +91,7 @@ fun NoteCustom(note: com.example.notesapp.data.Note, navController: NavControlle
             .padding(bottom = 8.dp, top = 8.dp, start = 5.dp)
             .combinedClickable(
                 onClick = {
-                    navController.navigate("note_screen/" + note.id)
+                    navController.navigate("note_screen/" + note.id + "/" + folderId)
                 },
                 onLongClick = {
                     noteViewModel.delete(note)
@@ -130,8 +128,8 @@ fun NoteCustom(note: com.example.notesapp.data.Note, navController: NavControlle
 
 
 @Composable
-fun NotesList(noteViewModel: NoteViewModel, navController: NavController) {
-    val notesList by noteViewModel.allNotes.collectAsState(initial = emptyList())
+fun NotesList1(noteViewModel: NoteViewModel, navController: NavController,folderId:Int) {
+    val notesList by noteViewModel.getNotesByFolder(folderId).collectAsState(initial = emptyList())
     if(notesList.isEmpty()){
         DefaultContent()
     }else {
@@ -140,10 +138,11 @@ fun NotesList(noteViewModel: NoteViewModel, navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(notesList) { note ->
-                NoteCustom(
+                NoteCustom1(
                     note = note,
                     navController = navController,
-                    noteViewModel = noteViewModel
+                    noteViewModel = noteViewModel,
+                    folderId=folderId
                 )
 
             }
@@ -154,8 +153,8 @@ fun NotesList(noteViewModel: NoteViewModel, navController: NavController) {
 
 
 @Composable
-fun NotesGrid(noteViewModel: NoteViewModel, navController: NavController) {
-    val notesList by noteViewModel.allNotes.collectAsState(initial = emptyList())
+fun NotesGrid1(noteViewModel: NoteViewModel, navController: NavController,folderId:Int) {
+    val notesList by noteViewModel.getNotesByFolder(folderId).collectAsState(initial = emptyList())
     if(notesList.isEmpty()){
         DefaultContent()
     }else {
@@ -174,15 +173,17 @@ fun NotesGrid(noteViewModel: NoteViewModel, navController: NavController) {
         }
 }
 @Composable
-fun MainTopBar(
+fun MainTopBar1(
     layout: Boolean,
     navController: NavController,
-    onLayoutToggle: (Boolean) -> Unit
+    onLayoutToggle: (Boolean) -> Unit,
+    folder: Flow<Folder?>
 ){
+    val folderState by folder.collectAsState(initial = null)
     CenterAlignedTopAppBar(
         title = {
             Text(
-                "Notes",
+                text =  folderState?.title ?: "",
                 overflow = TextOverflow.Ellipsis,
                 fontSize =30.sp,
                 fontWeight = FontWeight.Bold
@@ -218,57 +219,4 @@ fun MainTopBar(
 
         }
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun icon() {
-    Icon(
-        painter = painterResource(R.drawable.baseline_grid_view_24),        contentDescription = "Localized description",
-        Modifier
-            .fillMaxSize()
-    )
-}
-@Preview(showBackground = true)
-@Composable
-fun CustomNoteObjectPreview() {
-    NotesAppTheme {
-        NoteCustom(note = com.example.notesapp.data.Note(id = 1,
-            title = "Things to bye",
-            body = "bye",
-            ),
-        navController = rememberNavController(), viewModel())
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Composable
-fun ColumnPreview() {
-    NotesAppTheme {
-        MyApp(navController = rememberNavController())
-    }
-}
-
-
-@Preview (showSystemUi = true)
-@Composable
-fun NavDrawer(
-) {
-    Box(modifier = Modifier
-        .fillMaxHeight()
-        .width(300.dp)
-        .padding(top = 20.dp, end = 100.dp) ){
-        Column (modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp)){
-            Text(text = "NotesApp", fontSize = 20.sp,modifier = Modifier.padding(start = 10.dp))
-            Spacer(modifier = Modifier.padding(8.dp))
-            Divider(thickness = 0.5.dp,color = Color.Gray)
-            Spacer(modifier = Modifier.padding(7.dp))
-            Text(text = "Notes",modifier = Modifier.padding(start = 10.dp))
-            Spacer(modifier = Modifier.padding(5.dp))
-            Text(text = "Create/Edit folders",modifier = Modifier.padding(start = 10.dp))
-        }
-    }
-
 }

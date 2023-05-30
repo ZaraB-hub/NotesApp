@@ -28,16 +28,16 @@ import androidx.navigation.compose.rememberNavController
 import com.example.notesapp.data.NoteViewModel
 
 @Composable
-fun NoteScreen(navController: NavController,id:Int?){
+fun NoteScreen(navController: NavController,id:Int?,folderId:Int?){
 
-    if (id != null) {
-        NotePage(noteViewModel = viewModel(), id = id, navController = navController)
+    if (id != null && folderId!=null) {
+        NotePage(noteViewModel = viewModel(), id = id,folderId=folderId ,navController = navController)
     }
 
 }
 
 @Composable
-fun NotePage(noteViewModel: NoteViewModel,id:Int, navController:NavController, modifier: Modifier=Modifier){
+fun NotePage(noteViewModel: NoteViewModel,id:Int,folderId: Int, navController:NavController, modifier: Modifier=Modifier){
     val note by noteViewModel.getNoteById(id).collectAsState(initial = null)
     var titleValue by remember { mutableStateOf(note?.title?:"title" ) } 
     var bodyValue by remember { mutableStateOf(note?.body ?: "body") }
@@ -88,11 +88,6 @@ fun NotePage(noteViewModel: NoteViewModel,id:Int, navController:NavController, m
         }
     }
 
-@Preview
-@Composable
-fun Prev(){
-    NotePage(noteViewModel = viewModel() , id =3, navController = rememberNavController())
-}
 
 
 @Composable
