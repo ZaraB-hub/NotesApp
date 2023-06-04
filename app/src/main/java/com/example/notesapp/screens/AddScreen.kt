@@ -27,7 +27,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.notesapp.MyApp1
 import com.example.notesapp.data.NoteViewModel
-import com.example.notesapp.old.Note
+
 import java.text.SimpleDateFormat
 import java.util.*
 
