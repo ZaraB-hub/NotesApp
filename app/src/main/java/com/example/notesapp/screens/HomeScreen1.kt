@@ -1,6 +1,7 @@
 package com.example.notesapp
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -83,7 +84,12 @@ fun MyApp1(navController: NavController,folderId:Int,folderViewModel: FolderView
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun NoteCustom1(note: com.example.notesapp.data.Note, navController: NavController,noteViewModel: NoteViewModel,folderId: Int) {
+fun NoteCustom1(
+    note: com.example.notesapp.data.Note,
+    navController: NavController,
+    noteViewModel: NoteViewModel,
+    folderId: Int
+) {
     Surface(
         color = Color.White,
         shape = RoundedCornerShape(15),
@@ -91,37 +97,56 @@ fun NoteCustom1(note: com.example.notesapp.data.Note, navController: NavControll
             .padding(bottom = 8.dp, top = 8.dp, start = 5.dp)
             .combinedClickable(
                 onClick = {
-                    navController.navigate("note_screen/" + note.id + "/" + folderId)
+                    navController.navigate("note_screen/${note.id}/$folderId")
                 },
                 onLongClick = {
                     noteViewModel.delete(note)
                 }
             )
-
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-
+        Row(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = "${note.title}",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Row(modifier = Modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(text ="${note.timestamp}", fontSize = 20.sp, color = Color.Black.copy(alpha = 0.5f))
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 Text(
-                    text = "${note.body}",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    fontSize = 20.sp,
-                    color = Color.Black
+                    text = note.title,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Row(modifier = Modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        text = note.timestamp,
+                        fontSize = 20.sp,
+                        color = Color.Black.copy(alpha = 0.5f)
+                    )
+                    Text(
+                        text = note.body,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 20.sp,
+                        color = Color.Black
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .padding(top=20.dp)
+                    .size(32.dp)
+                    .clickable {
+                        noteViewModel.delete(note)
+                    }
+            ) {
+                Icon(
+                    Icons.Filled.Delete,
+                    contentDescription = "Delete",
+                    modifier = Modifier.fillMaxSize()
                 )
             }
-
         }
     }
 }
@@ -163,10 +188,11 @@ fun NotesGrid1(noteViewModel: NoteViewModel, navController: NavController,folder
             columns = GridCells.Adaptive(minSize = 150.dp)
         ) {
             items(notesList.size) {note->
-                NoteCustom(
+                NoteCustom1(
                     note = notesList[note],
                     navController = navController,
-                    noteViewModel = noteViewModel
+                    noteViewModel = noteViewModel,
+                    folderId=folderId
                 )
                 }
             }

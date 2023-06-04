@@ -8,10 +8,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,9 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.notesapp.MainTopBar
-import com.example.notesapp.NotesGrid
-import com.example.notesapp.NotesList
+import androidx.navigation.compose.rememberNavController
 import com.example.notesapp.Screen
 import com.example.notesapp.components.DefaultContent
 import com.example.notesapp.data.Folder
@@ -34,7 +32,9 @@ import com.example.notesapp.data.FolderViewModel
 import com.example.notesapp.data.NoteViewModel
 
 @Composable
-fun FolderScreen(navController: NavController,modifier:Modifier=Modifier){
+fun FolderScreen(navController: NavController,folderViewModel: FolderViewModel,modifier:Modifier=Modifier){
+        var showDialog by remember { mutableStateOf(false) }
+        var newFolderName by remember { mutableStateOf("") }
                 Box(
                         modifier
                                 .fillMaxSize()
@@ -46,7 +46,7 @@ fun FolderScreen(navController: NavController,modifier:Modifier=Modifier){
                                         fontWeight = FontWeight.Bold
                                 )
                                 Spacer(Modifier.height(5.dp))
-                                FolderList(viewModel(),navController=navController)
+                                FolderList(folderViewModel,navController=navController)
                         }
                         Row(
                                 modifier = Modifier
@@ -56,33 +56,83 @@ fun FolderScreen(navController: NavController,modifier:Modifier=Modifier){
                                 verticalAlignment = Alignment.Bottom,
                                 horizontalArrangement = Arrangement.End
                         ) {
-                                Text(text = "New Folder",
+                                Text(modifier=Modifier.clickable { showDialog=true },text = "New Folder",
                                 fontSize = 25.sp,
                                 color = Color.hsl(270f,.5f,0.3f),
                                 )
-                                }
+                        }
+
+                        if (showDialog) {
+                                AlertDialog(
+                                        onDismissRequest = { showDialog = false },
+                                        title = { Text("New Folder") },
+                                        text = {
+                                                TextField(
+                                                        value = newFolderName,
+                                                        onValueChange = { newFolderName = it },
+                                                        label = { Text("Folder Name") }
+                                                )
+                                        },
+                                        confirmButton = {
+                                                Button(
+                                                        onClick = {
+                                                                var folder=com.example.notesapp.data.Folder(title = newFolderName)
+                                                                folderViewModel.upsert(folder)
+                                                                showDialog = false
+                                                        }
+                                                ) {
+                                                        Text("Save")
+                                                }
+                                        },
+                                        dismissButton = {
+                                                Button(
+                                                        onClick = { showDialog = false }
+                                                ) {
+                                                        Text("Cancel")
+                                                }
+                                        }
+                                )
                         }
                 }
+}
+
+
+
+
+
 
 
 
 
 @Composable
-fun FolderCustom(navController: NavController,folder: Folder,folderViewModel: FolderViewModel) {
-        Text(
-                text = folder.title,
+fun FolderCustom(navController: NavController, folder: Folder, folderViewModel: FolderViewModel) {
+        Row(
                 modifier = Modifier
                         .border(
-                                width = 1.dp,
-                                color = Color.LightGray,
+                                width = 2.dp,
+                                color = Color.DarkGray
                         )
                         .padding(5.dp)
                         .fillMaxWidth()
                         .clickable { navController.navigate("home1_screen/" + folder.id) },
-                fontSize = 27.sp,
-                fontWeight = FontWeight.SemiBold
-        )
+                verticalAlignment = Alignment.CenterVertically
+        ) {
+                Text(
+                        text = folder.title,
+                        fontSize = 27.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.weight(1f)
+                )
+                Icon(
+                        Icons.Filled.Delete,
+                        contentDescription = "Navigate",
+                        modifier = Modifier.size(24.dp).clickable {
+                                folderViewModel.delete(folder)
+                        }
+                )
+        }
 }
+
 
 
 @Composable
@@ -102,4 +152,5 @@ fun FolderList(folderViewModel: FolderViewModel,navController: NavController) {
 
                 }
         }
+
 
